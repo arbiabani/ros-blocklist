@@ -1,9 +1,9 @@
-name: Sync MikroTik Blocklists
+name: Sync MikroTik Blocklist L
 
 on:
   schedule:
-    # اجرا به صورت خودکار در دقیقه 15 هر 2 ساعت یک‌بار
-    - cron: '15 */2 * * *'
+    # اجرا به صورت خودکار هر 24 ساعت یک‌بار (ساعت 3 بامداد UTC)
+    - cron: '0 3 * * *'
   workflow_dispatch: # امکان اجرای دستی با یک کلیک
 
 permissions:
@@ -16,15 +16,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download JSON lists from GitLab
+      - name: Remove old blocklist file
         run: |
-          curl -sS -f -O https://multiduplikator-group.gitlab.io/mikrotik_blocklist/blocklist.json
-          curl -sS -f -O https://multiduplikator-group.gitlab.io/mikrotik_blocklist/blocklist_l.json
-          curl -sS -f -O https://multiduplikator-group.gitlab.io/mikrotik_blocklist/blocklist_xl.json
+          rm -f blocklist_l.json
 
-      - name: Commit and Push updated lists
+      - name: Download blocklist_l.json from GitLab
+        run: |
+          curl -sS -f -O https://multiduplikator-group.gitlab.io/mikrotik_blocklist/blocklist_l.json
+
+      - name: Commit and Push updated list
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add *.json
-          git diff --staged --quiet || (git commit -m "Auto-update blocklists" && git push)
+          git add blocklist_l.json
+          git diff --staged --quiet || (git commit -m "Auto-update blocklist_l.json" && git push)
