@@ -1,4 +1,4 @@
-name: Sync MikroTik Blocklist L
+name: Sync MikroTik Blocklist L Only
 
 on:
   schedule:
@@ -16,11 +16,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Remove old blocklist file
+      - name: Wipe all old JSON files completely
         run: |
-          rm -f blocklist_l.json
+          rm -f *.json
 
-      - name: Download blocklist_l.json from GitLab
+      - name: Download only blocklist_l.json from GitLab
         run: |
           curl -sS -f -O https://multiduplikator-group.gitlab.io/mikrotik_blocklist/blocklist_l.json
 
@@ -28,5 +28,5 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add blocklist_l.json
-          git diff --staged --quiet || (git commit -m "Auto-update blocklist_l.json" && git push)
+          git add -A
+          git diff --staged --quiet || (git commit -m "Update blocklist_l.json and remove obsolete files" && git push)
